@@ -8,10 +8,18 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s]: %(message)s')
 
 # specify files to create
 list_of_files = [
+    ".env", # purely for local development
     ".github/workflows/.gitkeep",
-    "Notebooks",
-    f"src/__init__.py",
-    "requirements.txt",
+    "Notebooks/testing.py", # for testing files if needed
+    "scripts/create_buckets.py", # create proper S3 buckets if need be
+    "src/__init__.py", # to import files
+    "src/configs.py", # for config files
+    "src/logger.py", # dedicated logging file
+    "src/utils.py", # for repeated work
+    "src/graph.py", # for config information
+    "src/dependencies.py", # for api dependency
+    "src/main.py", # for api
+    "requirements.txt", # for package information 
 ]
 
 # Go through list and create folders/files
