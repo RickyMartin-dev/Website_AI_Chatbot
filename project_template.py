@@ -13,13 +13,15 @@ list_of_files = [
     "Notebooks/testing.py", # for testing files if needed
     "scripts/create_buckets.py", # create proper S3 buckets if need be
     "src/__init__.py", # to import files
-    "src/configs.py", # for config files
-    "src/logger.py", # dedicated logging file
+    "src/config.py", # for config files
+    "src/logs.py", # dedicated logging file
     "src/utils.py", # for repeated work
-    "src/graph.py", # for config information
-    "src/dependencies.py", # for api dependency
+    "src/memory.py", # in-process memory store
+    "src/chat.py", # for chat logic (Bedrock + Langgraph)
     "src/main.py", # for api
     "requirements.txt", # for package information 
+    "Dockerfile",
+    "tests/test_chat.py",
 ]
 
 # Go through list and create folders/files
