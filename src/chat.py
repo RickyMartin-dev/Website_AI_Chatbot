@@ -1,38 +1,25 @@
-from fastapi import HTTPException
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.runnables import RunnableLambda
-import boto3
-import time
-from .memory import state_graph, memory_saver
-from .logs import logger
-from .config import settings
+import uuid
+from typing import List, Dict
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
+from src.agent import ChatAgent
 
-bedrock = boto3.client('bedrock-runtime', region_name=settings.AWS_REGION)
-s3 = boto3.client('s3', region_name=settings.AWS_REGION)
+import logging
+logger = logging.getLogger(__name__)
 
-def llm_invoke(prompt: str):
-    response = bedrock.invoke_model(
-        modelId=settings.AWS_BEDROCK_MODEL,
-        inputText=prompt
-    )
-    return response.get('body')
+class ChatSession:
+    def __init__(self, agent: ChatAgent, session_id: str = None):
+        self.agent = agent
+        self.session_id = session_id or str(uuid.uuid4())
 
-llm = RunnableLambda(lambda prompt: llm_invoke(prompt))
+    def send(self, user_input: str) -> str:
+        result = self.agent.chat(user_input, self.session_id)
+        logger.info(f"📨 [{self.session_id}] User: {user_input}")
+        logger.info(f"📨 [{self.session_id}] Assistant: {result}")
+        return result["output"]
 
-async def chat_with_memory(user_input: str, session_id: str):
-    history = state_graph.load(session_id) or []
-    history.append(HumanMessage(content=user_input))
-
-    reply = await llm.invoke(user_input)
-    ai_msg = AIMessage(content=reply)
-    history.append(ai_msg)
-    state_graph.save(session_id, history)
-
-    s3.put_object(
-        Bucket=settings.S3_BUCKET,
-        Key=f"chats/{session_id}/{int(time.time())}.json",
-        Body=str([m.content for m in history])
-    )
-
-    logger.info(f"Session %s: %s -> %s", session_id, user_input, reply)
-    return reply
+    def history(self) -> List[str]:
+        return [
+            f"{'You' if isinstance(m, HumanMessage) else 'Bot'}: {m.content}"
+            for m in self.agent.memory.get_history(self.session_id)
+            if isinstance(m, (HumanMessage, AIMessage))
+        ]

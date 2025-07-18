@@ -1,31 +1,51 @@
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Request, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from .chat import chat_with_memory
-from .config import settings
+from pydantic import BaseModel
+import logging
+from src.config import API_KEY, ALLOWED_ORIGINS
+from src.agent import ChatAgent
+from src.logging import configure_logging
 
+# Setup logging
+configure_logging()
+logger = logging.getLogger(__name__)
+
+# Initialize FastAPI
 app = FastAPI()
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["POST"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-async def verify_api_key(x_api_key: str = Header(...)):
-    if x_api_key != settings.API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+# ChatAgent instance
+agent = ChatAgent()
 
+# Input schema
+class ChatInput(BaseModel):
+    input: str
+    session_id: str | None = None
+
+# Dependency for API Key auth
+def verify_api_key(x_api_key: str = Header(...)):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    return x_api_key
+
+# POST /chat
 @app.post("/chat")
 async def chat_endpoint(
-    message: dict,
-    api_key: str = Header(..., alias="x-api-key")
+    payload: ChatInput,
+    api_key: str = Depends(verify_api_key)
 ):
-    await verify_api_key(api_key)
-    user_input = message.get("message")
-    session_id = message.get("session_id")
-    if not user_input or not session_id:
-        raise HTTPException(400, "message and session_id required")
-    reply = await chat_with_memory(user_input, session_id)
-    return {"reply": reply}
+    try:
+        logger.info(f"Incoming chat: {payload}")
+        response = agent.chat(user_input=payload.input, session_id=payload.session_id)
+        return {"response": response["output"]}
+    except Exception as e:
+        logger.exception("Error in /chat endpoint")
+        raise HTTPException(status_code=500, detail=str(e))

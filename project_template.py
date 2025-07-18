@@ -11,14 +11,16 @@ list_of_files = [
     ".env", # purely for local development
     ".github/workflows/.gitkeep",
     "Notebooks/testing.py", # for testing files if needed
-    "scripts/create_buckets.py", # create proper S3 buckets if need be
+    # "scripts/create_buckets.py", # create proper S3 buckets if need be
     "src/__init__.py", # to import files
     "src/config.py", # for config files
-    "src/logs.py", # dedicated logging file
-    "src/utils.py", # for repeated work
+    "src/logging.py", # dedicated logging file
+    "src/bedrock.py", # for bedrock API call Code
     "src/memory.py", # in-process memory store
-    "src/chat.py", # for chat logic (Bedrock + Langgraph)
+    "src/chat.py", # for chat logic 
     "src/main.py", # for api
+    "src/agent.py", # for Langgraph Agent Logic
+    "src/utils.py", # for repeated work
     "requirements.txt", # for package information 
     "Dockerfile",
     "tests/test_chat.py",

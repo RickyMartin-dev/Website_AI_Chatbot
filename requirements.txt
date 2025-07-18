@@ -5,7 +5,7 @@ python-dotenv==1.1.1
 boto3==1.39.4
 langchain==0.3.26
 langchain-aws==0.2.27
-langgraph==0.5.2
+langgraph==0.5.3
 langsmith==0.4.4
 python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
