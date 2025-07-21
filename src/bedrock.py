@@ -1,12 +1,18 @@
 import json
 import boto3
-from src.config import AWS_REGION, AWS_BEDROCK_MODEL
+from src.config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BEDROCK_MODEL
+
+from dotenv import load_dotenv
+load_dotenv()
 
 import logging
 logger = logging.getLogger(__name__)
 
 def get_bedrock_response(prompt: str, temperature=0.7, max_tokens=300) -> str:
     logger.debug("🔧 Calling Bedrock...")
+    # session = boto3.session.Session(
+    #     aws_access_key_id=AWS_ACCESS_KEY_ID,
+    #     aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
     client = boto3.client("bedrock-runtime", region_name=AWS_REGION)
     body = {
         "anthropic_version": "bedrock-2023-05-31",
