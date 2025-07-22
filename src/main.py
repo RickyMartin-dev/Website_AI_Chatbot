@@ -1,13 +1,14 @@
 from fastapi import FastAPI, Request, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from mangum import Mangum
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import logging
 from src.config import API_KEY, ALLOWED_ORIGINS
 from src.agent import ChatAgent
-from src.logging import configure_logging
+from src.logger import configure_logging
 
 # Setup logging
 configure_logging()
@@ -64,3 +65,6 @@ async def chat_endpoint(
     except Exception as e:
         logger.exception("Error in /chat endpoint")
         raise HTTPException(status_code=500, detail=str(e))
+
+# This handler is what AWS Lambda will invoke
+handler = Mangum(app)
