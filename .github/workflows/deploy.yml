@@ -1,0 +1,53 @@
+name: Deploy Chatbot to Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPO: ${{ secrets.ECR_REPOSITORY }}
+  LAMBDA_FUNCTION: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  API_KEY: ${{ secrets.API_KEY }}
+  LANGSMITH_TRACING: ${{ secrets.LANGSMITH_TRACING }}
+  LANGSMITH_ENDPOINT: ${{ secrets.LANGSMITH_ENDPOINT }}
+  LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+  LANGSMITH_PROJECT: ${{ secrets.LANGSMITH_PROJECT }}
+  ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
+
+jobs:
+  deploy:
+    name: Build & Deploy to AWS
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Set image tag
+      id: tag
+      run: echo "TAG=latest" >> $GITHUB_ENV
+
+    - name: Build Docker image
+      run: |
+        docker buildx create --use
+        docker buildx build --platform linux/amd64 --provenance=false --tag $ECR_REPO:$TAG . --push
+
+    - name: Update Lambda to use latest image
+      run: |
+        aws lambda update-function-code \
+          --function-name $LAMBDA_FUNCTION \
+          --image-uri $ECR_REPO:$TAG
