@@ -37,7 +37,7 @@ jobs:
       id: login-ecr 
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Set image tag
+    - name: Set image tag 
       id: tag
       run: echo "TAG=latest" >> $GITHUB_ENV
 
