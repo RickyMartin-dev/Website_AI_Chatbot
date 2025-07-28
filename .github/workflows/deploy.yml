@@ -2,8 +2,7 @@ name: Deploy Chatbot to Lambda
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 env:
   REGION: ${{ secrets.AWS_REGION }}
