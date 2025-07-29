@@ -6,13 +6,14 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import logging
-from src.config import API_KEY, ALLOWED_ORIGINS
+from src.config import API_KEY, ALLOWED_ORIGINS, DEFAULT_SYSTEM_PROMPT
 from src.agent import ChatAgent
 from src.logger import configure_logging
 
 # Setup logging
 configure_logging()
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("chatbot")
+logger.setLevel(logging.INFO)
 
 limiter = Limiter(key_func=get_remote_address)
 # Initialize FastAPI
@@ -46,7 +47,7 @@ def verify_api_key(x_api_key: str = Header(...)):
 
 # POST /chat
 @app.post("/chat")
-@limiter.limit("10/minute")  # LIMIT: 10 requests per minute per IP
+@limiter.limit("5/minute")  # LIMIT: 10 requests per minute per IP
 async def chat_endpoint(
     payload: ChatInput,
     request: Request,
@@ -61,6 +62,7 @@ async def chat_endpoint(
     try:
         logger.info(f"Incoming chat: {payload}")
         response = agent.chat(user_input=payload.input, session_id=payload.session_id)
+        logger.info(f"output chat: {response['output']}")
         return {"message": response["output"]}
     except Exception as e:
         logger.exception("Error in /chat endpoint")
