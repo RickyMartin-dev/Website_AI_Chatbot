@@ -39,7 +39,7 @@ from unittest.mock import patch
 
 client = TestClient(app)
 
-@patch("src.main.get_bedrock_response", return_value="Hello from mock!")
+@patch("src.bedrock.get_bedrock_response", return_value="Hello from mock!")
 def test_chat_endpoint_success(mock_bedrock):
     payload = {"input": "Hello", "session_id": "test123"}
     headers = {"x-api-key": "for_now_this_is_for_testing"}
