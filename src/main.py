@@ -54,7 +54,7 @@ async def chat_endpoint(
     api_key: str = Depends(verify_api_key)
 ):
     origin = request.headers.get("origin")
-    # print(origin)
+    print(origin)
     if origin not in ALLOWED_ORIGINS:
         logger.warning(f"Rejected origin: {origin}")
         raise HTTPException(status_code=403, detail="Forbidden origin")

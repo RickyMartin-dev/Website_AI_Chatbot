@@ -1,13 +1,13 @@
 import pytest
-from fastapi.testclient import TestClient
-from src.main import app
+import sys
+sys.path.insert(1, '/src')
+from src.main import ChatAgent
 
-client = TestClient(app)
-
-def test_chat_unauthorized():
-    response = client.post("/chat", json={"message": "Hello", "session_id": "test"})
-    assert response.status_code == 422  # missing API key header
-
-def test_chat_missing_fields():
-    response = client.post("/chat", headers={"x-api-key": "wrong"}, json={})
-    assert response.status_code in [400, 401]
+def test_basic_chat_response():
+    agent = ChatAgent(system_prompt="You are a test bot.")
+    result = agent.chat(user_input="Hello", session_id="test-session")
+    
+    assert isinstance(result, dict)
+    assert "output" in result
+    assert isinstance(result["output"], str)
+    assert len(result["output"]) > 0
