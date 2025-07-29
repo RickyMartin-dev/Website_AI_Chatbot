@@ -42,7 +42,8 @@ client = TestClient(app)
 @patch("src.bedrock.get_bedrock_response", return_value="Hello from mock!")
 def test_chat_endpoint_success(mock_bedrock):
     payload = {"input": "Hello", "session_id": "test123"}
-    headers = {"x-api-key": "for_now_this_is_for_testing"}
+    headers = {"x-api-key": "for_now_this_is_for_testing",
+            "Origin": "https://rickymartin-dev.github.io"}
     response = client.post("/chat", json=payload, headers=headers)
     assert response.status_code == 200
     assert response.json()["message"] == "Hello from mock!"

@@ -34,7 +34,7 @@ def test_chat_endpoint_success(mock_bedrock):
     }
     headers = {
         "x-api-key": "for_now_this_is_for_testing",  # Must match your env/API_KEY
-        "origin": "http://127.0.0.1:5500"             # Must be in ALLOWED_ORIGINS
+        "origin": "https://rickymartin-dev.github.io"             # Must be in ALLOWED_ORIGINS
     }
     response = client.post("/chat", json=payload, headers=headers)
     assert response.status_code == 200
