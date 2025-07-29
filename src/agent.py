@@ -40,7 +40,7 @@ class ChatAgent:
             messages.append(HumanMessage(content=user_input))
             prompt = self._messages_to_prompt(messages)
 
-            print('\n',prompt,'\n')
+            # print('\n',prompt,'\n')
 
             response_text = get_bedrock_response(prompt)
             messages.append(AIMessage(content=response_text))
