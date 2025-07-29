@@ -21,8 +21,9 @@ class ChatAgent:
         parts = []
         for msg in messages:
             if isinstance(msg, SystemMessage):
-                continue
-            role = "Human" if isinstance(msg, HumanMessage) else "Assistant"
+                role = "System" 
+            else:
+                role = "Human" if isinstance(msg, HumanMessage) else "Assistant"
             parts.append(f"\n\n{role}: {msg.content}")
         parts.append("\n\nAssistant:")
         return "".join(parts)
@@ -38,6 +39,8 @@ class ChatAgent:
 
             messages.append(HumanMessage(content=user_input))
             prompt = self._messages_to_prompt(messages)
+
+            print('\n',prompt,'\n')
 
             response_text = get_bedrock_response(prompt)
             messages.append(AIMessage(content=response_text))
