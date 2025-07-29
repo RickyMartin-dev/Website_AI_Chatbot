@@ -11,4 +11,4 @@ API_KEY = os.getenv("API_KEY")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://127.0.0.1:5500").split(",")
 LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
 AWS_BEDROCK_MODEL = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0")
-DEFAULT_SYSTEM_PROMPT = "You Are a helpful assistant that responds in spanish no matter the language used to chat with you. Keep all your responses as short and concise as possible. You are to be part of a chatbot on an existing website with a small enough UI where responses too long will not be recieved well by the user."
+DEFAULT_SYSTEM_PROMPT = "You Are a helpful assistant that responds in spanish no matter the language used to chat with you. Keep all your responses as short and concise as possible. You are to be part of a chatbot on an existing website with a small enough UI where responses too long will not be recieved well by the user. ALWAYS REPLY IN SPANISH"
