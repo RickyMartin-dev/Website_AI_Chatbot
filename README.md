@@ -11,4 +11,4 @@ Simple API using AWS Bedrock, Docker, FastAPI.
 5. memory file
 6. Chat Session file
 7. Agent + Logic
-8. main/api main logic
+8. main/api main logic 
